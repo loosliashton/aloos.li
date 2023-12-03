@@ -14,8 +14,7 @@ function RedirectPage() {
       if (snapshot.exists()) {
         return snapshot.val().longUrl;
       } else {
-        // Navigate to Not Found page
-        window.location.href = "/not-found";
+        return "/not-found"
       }
     };
 
