@@ -3,22 +3,27 @@ import { app } from "./firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { Button } from "react-bootstrap";
 
+import { URL } from "./models/url";
+import * as firebaseService from "./firebaseService";
+
 export default function AdminPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState<any>(null);
+  const [urls, setUrls] = useState<URL[]>([]);
 
   useEffect(() => {
     const auth = getAuth(app);
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUser(user);
+        getUrls();
       } else {
         setUser(null);
       }
     });
     return unsubscribe;
-  });
+  }, [user]);
 
   function login() {
     const auth = getAuth(app);
@@ -26,10 +31,18 @@ export default function AdminPage() {
       .then((userCredential) => {
         console.log("success");
         setUser(userCredential.user);
+        getUrls();
       })
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  function getUrls() {
+    firebaseService.getAllUrls().then((urls) => {
+      setUrls(urls);
+      console.log(urls);
+    });
   }
 
   return (
@@ -71,7 +84,9 @@ export default function AdminPage() {
         </div>
       ) : (
         <div>
-          
+          {urls.map((url, index) => (
+            <div key={index}>{url.shortUrl}</div>
+          ))}
         </div>
       )}
     </div>
