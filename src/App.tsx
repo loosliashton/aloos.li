@@ -20,10 +20,10 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/:shortUrl" element={<RedirectPage />} />
         <Route path="/not-found" element={<NotFoundPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/:shortUrl" element={<RedirectPage />} />
+        <Route path="/" element={<HomePage />} />
       </Routes>
     </Router>
   );
