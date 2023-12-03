@@ -127,6 +127,7 @@ export default function AdminPage() {
                 <th>Short URL</th>
                 <th>Long URL</th>
                 <th>Created</th>
+                <th>Method</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -142,6 +143,7 @@ export default function AdminPage() {
                         new Date(url.created).toLocaleDateString()
                       : ""}
                   </td>
+                  <td>{url.method}</td>
                   <td>
                     <Button
                       variant="danger"

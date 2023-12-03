@@ -1,5 +1,5 @@
 import { app } from "./firebase";
-import { getDatabase, ref, set, child, get } from "firebase/database";
+import { getDatabase, ref, set, get } from "firebase/database";
 import { URL } from "./models/url";
 
 const db = getDatabase(app);
@@ -47,6 +47,7 @@ export async function addUrl(
     await set(urlRef, {
       longUrl: longUrl,
       created: new Date().toISOString(),
+      method: "local",
     });
     return true;
   }
@@ -61,4 +62,9 @@ export async function deleteUrl(shortUrl: string): Promise<boolean> {
   } else {
     return false;
   }
+}
+
+export async function checkApiKey(key: string): Promise<boolean> {
+  const snapshot = await get(ref(db, "apiKeys/" + key));
+  return snapshot.exists();
 }
