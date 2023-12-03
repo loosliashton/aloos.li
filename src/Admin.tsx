@@ -145,9 +145,10 @@ export default function AdminPage() {
                   <td>
                     <Button
                       variant="danger"
-                      onClick={() =>
-                        firebaseService.deleteUrl(url.shortUrl).then(getUrls)
-                      }
+                      onClick={() => {
+                        if (window.confirm("Are you sure?"))
+                          firebaseService.deleteUrl(url.shortUrl).then(getUrls);
+                      }}
                     >
                       Delete
                     </Button>
