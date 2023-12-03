@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { app } from "./firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { Button } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 
 import { URL } from "./models/url";
 import * as firebaseService from "./firebaseService";
@@ -11,6 +11,9 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState<any>(null);
   const [urls, setUrls] = useState<URL[]>([]);
+
+  const [newLongUrl, setNewLongUrl] = useState("");
+  const [newShortUrl, setNewShortUrl] = useState("");
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -41,7 +44,16 @@ export default function AdminPage() {
   function getUrls() {
     firebaseService.getAllUrls().then((urls) => {
       setUrls(urls);
-      console.log(urls);
+    });
+  }
+
+  function addUrl() {
+    firebaseService.addUrl(newShortUrl, newLongUrl).then((result) => {
+      if (result) {
+        getUrls();
+        setNewShortUrl("");
+        setNewLongUrl("");
+      } else alert("Short URL already exists");
     });
   }
 
@@ -84,9 +96,66 @@ export default function AdminPage() {
         </div>
       ) : (
         <div>
-          {urls.map((url, index) => (
-            <div key={index}>{url.shortUrl}</div>
-          ))}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
+              padding: "20px",
+              gap: "10px",
+            }}
+          >
+            <input
+              type="text"
+              value={newShortUrl}
+              placeholder="Short URL"
+              onChange={(e) => setNewShortUrl(e.target.value)}
+            />
+            <input
+              type="text"
+              value={newLongUrl}
+              placeholder="Long URL"
+              onChange={(e) => setNewLongUrl(e.target.value)}
+            />
+            <Button onClick={addUrl}>Submit</Button>
+          </div>
+
+          <Table bordered hover>
+            <thead>
+              <tr>
+                <th>Short URL</th>
+                <th>Long URL</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {urls.map((url, index) => (
+                <tr key={index}>
+                  <td>{url.shortUrl}</td>
+                  <td>{url.longUrl}</td>
+                  <td>
+                    {url.created
+                      ? new Date(url.created).toLocaleTimeString() +
+                        " " +
+                        new Date(url.created).toLocaleDateString()
+                      : ""}
+                  </td>
+                  <td>
+                    <Button
+                      variant="danger"
+                      onClick={() =>
+                        firebaseService.deleteUrl(url.shortUrl).then(getUrls)
+                      }
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </div>
       )}
     </div>

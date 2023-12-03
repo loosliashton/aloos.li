@@ -14,8 +14,51 @@ export async function getAllUrls(): Promise<URL[]> {
       url.shortUrl = childSnapshot.key;
       urls.push(url);
     });
-    return urls;
+    return urls.sort((a, b) => {
+      if (a.created && b.created) {
+        return new Date(b.created).getTime() - new Date(a.created).getTime();
+      } else {
+        return 0;
+      }
+    });
   } else {
     return [];
+  }
+}
+
+export async function addUrl(
+  shortUrl: string,
+  longUrl: string
+): Promise<boolean> {
+  if (!shortUrl) {
+    while (true) {
+      shortUrl = Math.random().toString(36).substring(2, 5);
+      const snapshot = await get(ref(db, "urls/" + shortUrl));
+      if (!snapshot.exists()) {
+        break;
+      }
+    }
+  }
+  const urlRef = ref(db, "urls/" + shortUrl);
+  const snapshot = await get(urlRef);
+  if (snapshot.exists()) {
+    return false;
+  } else {
+    await set(urlRef, {
+      longUrl: longUrl,
+      created: new Date().toISOString(),
+    });
+    return true;
+  }
+}
+
+export async function deleteUrl(shortUrl: string): Promise<boolean> {
+  const urlRef = ref(db, "urls/" + shortUrl);
+  const snapshot = await get(urlRef);
+  if (snapshot.exists()) {
+    await set(urlRef, null);
+    return true;
+  } else {
+    return false;
   }
 }
