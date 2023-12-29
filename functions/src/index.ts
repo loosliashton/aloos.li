@@ -21,6 +21,16 @@ const corsHandler = cors({ origin: true });
 
 exports.newShortUrl = functions.https.onRequest(
   async (request: any, response: any) => {
+    const allowedDomain = 'https://lists.ashtonloosli.com';
+
+    const origin = request.headers.origin || '';
+    const referer = request.headers.referer || '';
+
+    if (!origin.includes(allowedDomain) && !referer.includes(allowedDomain)) {
+      response.status(403).send('Access denied');
+      return;
+    }
+    
     corsHandler(request, response, async () => {
       const { shortUrl, longUrl } = request.query;
       const result = await addUrl(shortUrl, longUrl);

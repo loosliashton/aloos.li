@@ -134,8 +134,14 @@ export default function AdminPage() {
             <tbody>
               {urls.map((url, index) => (
                 <tr key={index}>
-                  <td>{url.shortUrl}</td>
-                  <td>{url.longUrl}</td>
+                  <td>
+                    <a href={`https://aloos.li/${url.shortUrl}`}>
+                      {url.shortUrl}
+                    </a>
+                  </td>
+                  <td>
+                    <a href={url.longUrl}>{url.longUrl}</a>
+                  </td>
                   <td>
                     {url.created
                       ? new Date(url.created).toLocaleTimeString() +
