@@ -1,21 +1,9 @@
 const functions = require("firebase-functions");
-import { getDatabase, ref, set, get } from "firebase/database";
-import { initializeApp } from "firebase/app";
+import * as admin from "firebase-admin";
 import * as cors from "cors";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDIvc9NKDhEr_B5MuIVCT0GCrew6AYTpKE",
-  authDomain: "aloosli-88777.firebaseapp.com",
-  projectId: "aloosli-88777",
-  storageBucket: "aloosli-88777.appspot.com",
-  messagingSenderId: "999327732075",
-  appId: "1:999327732075:web:5ff70c9bd004c51176fc2e",
-  measurementId: "G-F48KLC9MQD",
-};
-
-// Initialize Firebase
-export const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+admin.initializeApp();
+const db = admin.database();
 
 const corsHandler = cors({ origin: true });
 
@@ -48,18 +36,18 @@ async function addUrl(shortUrl: string, longUrl: string): Promise<string> {
   if (!shortUrl) {
     while (true) {
       shortUrl = Math.random().toString(36).substring(2, 5);
-      const snapshot = await get(ref(db, "urls/" + shortUrl));
+      const snapshot = await db.ref("urls/" + shortUrl).get();
       if (!snapshot.exists()) {
         break;
       }
     }
   }
-  const urlRef = ref(db, "urls/" + shortUrl);
-  const snapshot = await get(urlRef);
+  const urlRef = db.ref("urls/" + shortUrl);
+  const snapshot = await urlRef.get();
   if (snapshot.exists()) {
     return "";
   } else {
-    await set(urlRef, {
+    await urlRef.set({
       longUrl: longUrl,
       created: new Date().toISOString(),
       method: "api",

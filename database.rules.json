@@ -1,0 +1,30 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "urls": {
+      ".read": "auth != null",
+      "$shortUrl": {
+        ".read": true,
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['longUrl']) && newData.child('longUrl').isString() && newData.child('longUrl').val().matches(/^https?:\\/\\/.+/)",
+        "longUrl": {
+          ".validate": "newData.isString() && newData.val().matches(/^https?:\\/\\/.+/)"
+        },
+        "created": {
+          ".validate": "newData.isString()"
+        },
+        "method": {
+          ".validate": "newData.isString()"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    "apiKeys": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}
